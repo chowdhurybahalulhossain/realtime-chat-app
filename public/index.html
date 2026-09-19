@@ -8,20 +8,43 @@
 </head>
 <body>
 
-  <div class="chat-container">
-    <h2>Real-Time Chat</h2>
+  <!-- Join screen: shown first, before entering the chat -->
+  <div class="join-container" id="join-container">
+    <div class="join-box">
+      <h2>Join the Chat</h2>
+      <input id="username-input" placeholder="Enter your name..." autocomplete="off" />
+      <button id="join-btn">Join Chat</button>
+    </div>
+  </div>
 
-    <!-- Where all messages will be displayed -->
+  <!-- Chat screen: hidden until user joins -->
+  <div class="chat-container" id="chat-container" style="display: none;">
+    <div class="chat-header">
+      <div class="header-left">
+        <div class="room-avatar">💬</div>
+        <div class="header-info">
+          <h2>Real-Time Chat</h2>
+          <span id="online-count">0 online</span>
+        </div>
+      </div>
+      <div class="header-icons">
+        <span class="icon-btn" title="Voice call (coming soon)">📞</span>
+        <span class="icon-btn" title="Video call (coming soon)">🎥</span>
+        <span class="icon-btn" title="Chat info (coming soon)">ℹ️</span>
+      </div>
+    </div>
+
     <ul id="messages"></ul>
+    <div id="typing-indicator"></div>
 
-    <!-- Message input form -->
     <form id="form">
+      <span class="icon-btn input-icon" title="Emoji (coming soon)">😊</span>
+      <span class="icon-btn input-icon" id="attach-btn" title="Send image (coming soon)">📎</span>
       <input id="input" autocomplete="off" placeholder="Type a message..." />
       <button type="submit">Send</button>
     </form>
   </div>
 
-  <!-- Socket.io client library (auto-provided by the server) -->
   <script src="/socket.io/socket.io.js"></script>
   <script src="client.js"></script>
 </body>

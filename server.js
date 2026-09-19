@@ -22,10 +22,19 @@ app.get('/', (req, res) => {
 io.on('connection', (socket) => {
   console.log('A user connected:', socket.id);
 
-  // When a user sends a message, broadcast it to everyone
-  socket.on('chat message', (msg) => {
-    console.log('Message received:', msg);
-    io.emit('chat message', msg); // send to all connected clients
+  // When a user sends a message, broadcast it (with sender info + time) to everyone
+  socket.on('chat message', (data) => {
+    const time = new Date().toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
+    io.emit('chat message', {
+      text: data.text,
+      username: data.username,
+      senderId: socket.id,
+      time: time,
+    });
   });
 
   // When a user disconnects
