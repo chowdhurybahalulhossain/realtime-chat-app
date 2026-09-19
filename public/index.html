@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Real-Time Chat App</title>
   <link rel="stylesheet" href="style.css" />
+  <!-- Font Awesome icon library -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 </head>
 <body>
 
@@ -21,16 +23,16 @@
   <div class="chat-container" id="chat-container" style="display: none;">
     <div class="chat-header">
       <div class="header-left">
-        <div class="room-avatar">💬</div>
+        <div class="room-avatar"><i class="fa-solid fa-comments"></i></div>
         <div class="header-info">
           <h2>Real-Time Chat</h2>
           <span id="online-count">0 online</span>
         </div>
       </div>
       <div class="header-icons">
-        <span class="icon-btn" title="Voice call (coming soon)">📞</span>
-        <span class="icon-btn" title="Video call (coming soon)">🎥</span>
-        <span class="icon-btn" title="Chat info (coming soon)">ℹ️</span>
+        <span class="icon-btn" title="Voice call (coming soon)"><i class="fa-solid fa-phone"></i></span>
+        <span class="icon-btn" title="Video call (coming soon)"><i class="fa-solid fa-video"></i></span>
+        <span class="icon-btn" title="Chat info (coming soon)"><i class="fa-solid fa-circle-info"></i></span>
       </div>
     </div>
 
@@ -38,10 +40,10 @@
     <div id="typing-indicator"></div>
 
     <form id="form">
-      <span class="icon-btn input-icon" title="Emoji (coming soon)">😊</span>
-      <span class="icon-btn input-icon" id="attach-btn" title="Send image (coming soon)">📎</span>
+      <span class="icon-btn input-icon" title="Emoji (coming soon)"><i class="fa-regular fa-face-smile"></i></span>
+      <span class="icon-btn input-icon" id="attach-btn" title="Send image (coming soon)"><i class="fa-solid fa-paperclip"></i></span>
       <input id="input" autocomplete="off" placeholder="Type a message..." />
-      <button type="submit">Send</button>
+      <button type="submit"><i class="fa-solid fa-paper-plane"></i></button>
     </form>
   </div>
 
