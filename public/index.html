@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Real-Time Chat App</title>
+  <title>LinkUp - Chat</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,31 +11,12 @@
 </head>
 <body>
 
-  <!-- Join screen: shown first, before entering the chat -->
-  <div class="join-container" id="join-container">
-    <div class="join-box">
-      <div class="join-logo">
-        <i class="fa-solid fa-comments"></i>
-      </div>
-      <h2>ChatWave</h2>
-      <p class="join-subtitle">Connect instantly. Chat in real-time.</p>
-      <div class="input-wrapper">
-        <i class="fa-solid fa-user input-icon-inline"></i>
-        <input id="username-input" placeholder="Enter your name..." autocomplete="off" />
-      </div>
-      <button id="join-btn">
-        Join Chat <i class="fa-solid fa-arrow-right"></i>
-      </button>
-    </div>
-  </div>
-
-  <!-- Chat screen: hidden until user joins -->
   <div class="chat-container" id="chat-container" style="display: none;">
     <div class="chat-header">
       <div class="header-left">
-        <div class="room-avatar"><i class="fa-solid fa-comments"></i></div>
+        <div class="room-avatar"><i class="fa-solid fa-link"></i></div>
         <div class="header-info">
-          <h2>Real-Time Chat</h2>
+          <h2>LinkUp</h2>
           <span id="online-count">0 online</span>
         </div>
       </div>
@@ -43,6 +24,7 @@
         <span class="icon-btn" title="Voice call (coming soon)"><i class="fa-solid fa-phone"></i></span>
         <span class="icon-btn" title="Video call (coming soon)"><i class="fa-solid fa-video"></i></span>
         <span class="icon-btn" title="Chat info (coming soon)"><i class="fa-solid fa-circle-info"></i></span>
+        <span class="icon-btn" id="logout-btn" title="Log out"><i class="fa-solid fa-right-from-bracket"></i></span>
       </div>
     </div>
 

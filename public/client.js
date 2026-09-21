@@ -1,19 +1,15 @@
 // Connect to the server using Socket.io
 const socket = io();
 
-// Join screen elements
-const joinContainer = document.getElementById('join-container');
-const chatContainer = document.getElementById('chat-container');
-const usernameInput = document.getElementById('username-input');
-const joinBtn = document.getElementById('join-btn');
-
 // Chat elements
+const chatContainer = document.getElementById('chat-container');
 const form = document.getElementById('form');
 const input = document.getElementById('input');
 const messages = document.getElementById('messages');
 const onlineCount = document.getElementById('online-count');
 const typingIndicator = document.getElementById('typing-indicator');
 const attachBtn = document.getElementById('attach-btn');
+const logoutBtn = document.getElementById('logout-btn');
 
 let username = '';
 let typingTimeout;
@@ -28,22 +24,43 @@ function getAvatarColor(name) {
   return colors[Math.abs(hash) % colors.length];
 }
 
-// Handle joining the chat
-joinBtn.addEventListener('click', () => {
-  if (usernameInput.value.trim()) {
-    username = usernameInput.value.trim();
-    joinContainer.style.display = 'none';
+// Check if the user is logged in before showing the chat
+async function checkLogin() {
+  try {
+    const response = await fetch('/current-user');
+
+    if (!response.ok) {
+      // Not logged in — send them to the login page
+      window.location.href = 'login.html';
+      return;
+    }
+
+    const data = await response.json();
+    username = data.user.name;
+
+    // Show the chat screen now that we know who the user is
     chatContainer.style.display = 'flex';
     input.focus();
-  }
-});
 
-// Allow pressing Enter to join
-usernameInput.addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') {
-    joinBtn.click();
+  } catch (err) {
+    console.error('Failed to check login status:', err);
+    window.location.href = 'login.html';
   }
-});
+}
+
+checkLogin();
+
+// Handle logout
+if (logoutBtn) {
+  logoutBtn.addEventListener('click', async () => {
+    try {
+      await fetch('/logout', { method: 'POST' });
+      window.location.href = 'login.html';
+    } catch (err) {
+      console.error('Logout failed:', err);
+    }
+  });
+}
 
 // When the form is submitted (user sends a message)
 form.addEventListener('submit', (e) => {
@@ -66,7 +83,7 @@ input.addEventListener('input', () => {
   }, 1000);
 });
 
-// Placeholder for the image-sending feature (coming in the next step)
+// Placeholder for the image-sending feature
 attachBtn.addEventListener('click', () => {
   alert('Image sending feature coming soon!');
 });
@@ -93,7 +110,6 @@ socket.on('chat message', (data) => {
 
   item.classList.add(isOwnMessage ? 'own-message' : 'other-message');
 
-  // Message bubble (contains username, text, and time)
   const bubbleWrapper = document.createElement('div');
   bubbleWrapper.classList.add('bubble-wrapper');
 
@@ -113,7 +129,6 @@ socket.on('chat message', (data) => {
   bubbleWrapper.appendChild(bubble);
   bubbleWrapper.appendChild(time);
 
-  // Only show an avatar for OTHER people's messages (not your own)
   if (isOwnMessage) {
     item.appendChild(bubbleWrapper);
   } else {
