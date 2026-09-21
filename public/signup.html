@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LinkUp - Sign Up</title>
+  <link rel="stylesheet" href="auth.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <div class="auth-container">
+    <div class="auth-box">
+      <div class="auth-logo">
+        <i class="fa-solid fa-link"></i>
+      </div>
+      <h2>Create your LinkUp account</h2>
+      <p class="auth-subtitle">Join and start chatting in real-time</p>
+
+      <div id="error-message" class="error-message"></div>
+
+      <form id="signup-form">
+        <div class="input-wrapper">
+          <i class="fa-solid fa-user input-icon-inline"></i>
+          <input type="text" id="name" placeholder="Full name" required />
+        </div>
+
+        <div class="input-wrapper">
+          <i class="fa-solid fa-cake-candles input-icon-inline"></i>
+          <input type="date" id="birthdate" required />
+          <span id="age-preview" class="age-preview"></span>
+        </div>
+
+        <div class="input-wrapper">
+          <i class="fa-solid fa-envelope input-icon-inline"></i>
+          <input type="email" id="email" placeholder="Email address" required />
+        </div>
+
+        <div class="input-wrapper">
+          <i class="fa-solid fa-lock input-icon-inline"></i>
+          <input type="password" id="password" placeholder="Password" required />
+          <i class="fa-solid fa-eye password-toggle" id="password-toggle"></i>
+        </div>
+
+        <button type="submit">
+          Sign Up <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </form>
+
+      <p class="auth-switch">
+        Already have an account? <a href="login.html">Log In</a>
+      </p>
+    </div>
+  </div>
+
+  <script src="auth.js"></script>
+</body>
+</html>

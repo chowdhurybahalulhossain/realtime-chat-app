@@ -5,17 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Real-Time Chat App</title>
   <link rel="stylesheet" href="style.css" />
-  <!-- Font Awesome icon library -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
   <!-- Join screen: shown first, before entering the chat -->
   <div class="join-container" id="join-container">
     <div class="join-box">
-      <h2>Join the Chat</h2>
-      <input id="username-input" placeholder="Enter your name..." autocomplete="off" />
-      <button id="join-btn">Join Chat</button>
+      <div class="join-logo">
+        <i class="fa-solid fa-comments"></i>
+      </div>
+      <h2>ChatWave</h2>
+      <p class="join-subtitle">Connect instantly. Chat in real-time.</p>
+      <div class="input-wrapper">
+        <i class="fa-solid fa-user input-icon-inline"></i>
+        <input id="username-input" placeholder="Enter your name..." autocomplete="off" />
+      </div>
+      <button id="join-btn">
+        Join Chat <i class="fa-solid fa-arrow-right"></i>
+      </button>
     </div>
   </div>
 
