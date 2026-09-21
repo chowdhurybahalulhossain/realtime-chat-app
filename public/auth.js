@@ -81,3 +81,47 @@ if (signupForm) {
     }
   });
 }
+
+// Login form handling
+const loginForm = document.getElementById('login-form');
+
+if (loginForm) {
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+
+    const submitBtn = loginForm.querySelector('button');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Logging in...';
+
+    try {
+      const response = await fetch('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        errorMessage.textContent = data.error;
+        errorMessage.classList.add('show');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Log In <i class="fa-solid fa-arrow-right"></i>';
+        return;
+      }
+
+      // Login successful — go to the chat page
+      window.location.href = 'index.html';
+
+    } catch (err) {
+      console.error('Login request failed:', err);
+      errorMessage.textContent = 'Could not connect to the server. Please try again.';
+      errorMessage.classList.add('show');
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = 'Log In <i class="fa-solid fa-arrow-right"></i>';
+    }
+  });
+}

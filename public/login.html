@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LinkUp - Log In</title>
+  <link rel="stylesheet" href="auth.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <div class="auth-container">
+    <div class="auth-box">
+      <div class="auth-logo">
+        <i class="fa-solid fa-link"></i>
+      </div>
+      <h2>Welcome back to LinkUp</h2>
+      <p class="auth-subtitle">Log in to continue chatting</p>
+
+      <div id="error-message" class="error-message"></div>
+
+      <form id="login-form">
+        <div class="input-wrapper">
+          <i class="fa-solid fa-envelope input-icon-inline"></i>
+          <input type="email" id="email" placeholder="Email address" required />
+        </div>
+
+        <div class="input-wrapper">
+          <i class="fa-solid fa-lock input-icon-inline"></i>
+          <input type="password" id="password" placeholder="Password" required />
+          <i class="fa-solid fa-eye password-toggle" id="password-toggle"></i>
+        </div>
+
+        <button type="submit">
+          Log In <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </form>
+
+      <p class="auth-switch">
+        Don't have an account? <a href="signup.html">Sign Up</a>
+      </p>
+    </div>
+  </div>
+
+  <script src="auth.js"></script>
+</body>
+</html>

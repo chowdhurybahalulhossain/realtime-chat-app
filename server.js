@@ -6,6 +6,7 @@ const path = require('path');
 require('dotenv').config();
 const pool = require('./db');
 const bcrypt = require('bcrypt');
+const session = require('express-session');
 
 // Create Express app and HTTP server
 const app = express();
@@ -16,6 +17,13 @@ const io = new Server(server);
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(express.json());
+
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'linkup-secret-key',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { maxAge: 24 * 60 * 60 * 1000 } // 24 hours
+}));
 
 // Send index.html when user visits the root URL
 app.get('/', (req, res) => {
@@ -47,6 +55,60 @@ app.post('/signup', async (req, res) => {
   } catch (err) {
     console.error('Signup error:', err);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
+  }
+});
+
+// Login route
+app.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // Find the user by email
+    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+
+    if (result.rows.length === 0) {
+      return res.status(400).json({ error: 'Invalid email or password' });
+    }
+
+    const user = result.rows[0];
+
+    // Compare the entered password with the hashed password in the database
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.status(400).json({ error: 'Invalid email or password' });
+    }
+
+    // Save user info in the session
+    req.session.user = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+    };
+
+    res.status(200).json({ message: 'Login successful', user: req.session.user });
+  } catch (err) {
+    console.error('Login error:', err);
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
+  }
+});
+
+// Logout route
+app.post('/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).json({ error: 'Could not log out' });
+    }
+    res.status(200).json({ message: 'Logged out successfully' });
+  });
+});
+
+// Check current logged-in user (useful for the chat page)
+app.get('/current-user', (req, res) => {
+  if (req.session.user) {
+    res.status(200).json({ user: req.session.user });
+  } else {
+    res.status(401).json({ error: 'Not logged in' });
   }
 });
 
