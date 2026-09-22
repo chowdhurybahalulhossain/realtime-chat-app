@@ -30,7 +30,6 @@ async function checkLogin() {
     const response = await fetch('/current-user');
 
     if (!response.ok) {
-      // Not logged in — send them to the login page
       window.location.href = 'login.html';
       return;
     }
@@ -38,9 +37,10 @@ async function checkLogin() {
     const data = await response.json();
     username = data.user.name;
 
-    // Show the chat screen now that we know who the user is
     chatContainer.style.display = 'flex';
     input.focus();
+
+    loadPreviousMessages();
 
   } catch (err) {
     console.error('Failed to check login status:', err);
@@ -49,6 +49,28 @@ async function checkLogin() {
 }
 
 checkLogin();
+
+// Load and display previous messages from the database
+async function loadPreviousMessages() {
+  try {
+    const response = await fetch('/messages');
+    const data = await response.json();
+
+    data.messages.forEach((msg) => {
+      displayMessage({
+        text: msg.text,
+        username: msg.username,
+        senderId: null,
+        time: new Date(msg.created_at).toLocaleTimeString('en-US', {
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
+      });
+    });
+  } catch (err) {
+    console.error('Failed to load previous messages:', err);
+  }
+}
 
 // Handle logout
 if (logoutBtn) {
@@ -103,10 +125,10 @@ socket.on('online count', (count) => {
   onlineCount.textContent = `${count} online`;
 });
 
-// When a message is received from the server, display it
-socket.on('chat message', (data) => {
+// Reusable function to display a single message in the chat
+function displayMessage(data) {
   const item = document.createElement('li');
-  const isOwnMessage = data.senderId === socket.id;
+  const isOwnMessage = data.senderId === socket.id || data.username === username;
 
   item.classList.add(isOwnMessage ? 'own-message' : 'other-message');
 
@@ -143,4 +165,9 @@ socket.on('chat message', (data) => {
 
   messages.appendChild(item);
   messages.scrollTop = messages.scrollHeight;
+}
+
+// When a message is received live from the server, display it
+socket.on('chat message', (data) => {
+  displayMessage(data);
 });

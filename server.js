@@ -112,17 +112,41 @@ app.get('/current-user', (req, res) => {
   }
 });
 
+// Get all previous chat messages (for loading chat history)
+app.get('/messages', async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT username, text, created_at FROM messages ORDER BY created_at ASC LIMIT 100'
+    );
+    res.status(200).json({ messages: result.rows });
+  } catch (err) {
+    console.error('Error fetching messages:', err);
+    res.status(500).json({ error: 'Could not load messages' });
+  }
+});
+
 // Handle real-time connections with Socket.io
 io.on('connection', (socket) => {
   console.log('A user connected:', socket.id);
 
   // When a user sends a message, broadcast it (with sender info + time) to everyone
-  socket.on('chat message', (data) => {
+  socket.on('chat message', async (data) => {
     const time = new Date().toLocaleTimeString('en-US', {
       hour: '2-digit',
       minute: '2-digit',
     });
 
+    // Save the message to the database
+    try {
+      await pool.query(
+        'INSERT INTO messages (username, text) VALUES ($1, $2)',
+        [data.username, data.text]
+      );
+    } catch (err) {
+      console.error('Error saving message:', err);
+    }
+
+    // Broadcast the message to everyone
     io.emit('chat message', {
       text: data.text,
       username: data.username,
