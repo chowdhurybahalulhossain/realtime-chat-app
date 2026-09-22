@@ -1,0 +1,1 @@
+feat: redesign UI, add file upload support, and enhance chat features

@@ -7,6 +7,7 @@ require('dotenv').config();
 const pool = require('./db');
 const bcrypt = require('bcrypt');
 const session = require('express-session');
+const multer = require('multer');
 
 // Create Express app and HTTP server
 const app = express();
@@ -15,6 +16,32 @@ const io = new Server(server);
 
 // Serve static files (HTML, CSS, JS) from the "public" folder
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Configure multer for image uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    const uniqueName = Date.now() + '-' + Math.round(Math.random() * 1e9) + path.extname(file.originalname);
+    cb(null, uniqueName);
+  },
+});
+
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'));
+    }
+  },
+});
+
+// Serve uploaded images so they can be viewed in the browser
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use(express.json());
 
@@ -116,13 +143,22 @@ app.get('/current-user', (req, res) => {
 app.get('/messages', async (req, res) => {
   try {
     const result = await pool.query(
-      'SELECT username, text, created_at FROM messages ORDER BY created_at ASC LIMIT 100'
+      'SELECT username, text, image_url, created_at FROM messages ORDER BY created_at ASC LIMIT 100'
     );
     res.status(200).json({ messages: result.rows });
   } catch (err) {
     console.error('Error fetching messages:', err);
     res.status(500).json({ error: 'Could not load messages' });
   }
+});
+
+// Image upload route
+app.post('/upload', upload.single('image'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No image uploaded' });
+  }
+  const imageUrl = `/uploads/${req.file.filename}`;
+  res.status(200).json({ imageUrl });
 });
 
 // Handle real-time connections with Socket.io
@@ -136,11 +172,11 @@ io.on('connection', (socket) => {
       minute: '2-digit',
     });
 
-    // Save the message to the database
+    // Save the message to the database (text and/or image URL)
     try {
       await pool.query(
-        'INSERT INTO messages (username, text) VALUES ($1, $2)',
-        [data.username, data.text]
+        'INSERT INTO messages (username, text, image_url) VALUES ($1, $2, $3)',
+        [data.username, data.text || null, data.imageUrl || null]
       );
     } catch (err) {
       console.error('Error saving message:', err);
@@ -149,6 +185,7 @@ io.on('connection', (socket) => {
     // Broadcast the message to everyone
     io.emit('chat message', {
       text: data.text,
+      imageUrl: data.imageUrl,
       username: data.username,
       senderId: socket.id,
       time: time,

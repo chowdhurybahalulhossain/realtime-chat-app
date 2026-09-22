@@ -10,6 +10,7 @@ const onlineCount = document.getElementById('online-count');
 const typingIndicator = document.getElementById('typing-indicator');
 const attachBtn = document.getElementById('attach-btn');
 const logoutBtn = document.getElementById('logout-btn');
+const imageInput = document.getElementById('image-input');
 
 let username = '';
 let typingTimeout;
@@ -59,6 +60,7 @@ async function loadPreviousMessages() {
     data.messages.forEach((msg) => {
       displayMessage({
         text: msg.text,
+        imageUrl: msg.image_url,
         username: msg.username,
         senderId: null,
         time: new Date(msg.created_at).toLocaleTimeString('en-US', {
@@ -105,9 +107,41 @@ input.addEventListener('input', () => {
   }, 1000);
 });
 
-// Placeholder for the image-sending feature
+// Clicking the attach icon opens the hidden file picker
 attachBtn.addEventListener('click', () => {
-  alert('Image sending feature coming soon!');
+  imageInput.click();
+});
+
+// When the user selects an image, upload it
+imageInput.addEventListener('change', async () => {
+  const file = imageInput.files[0];
+  if (!file) return;
+
+  const formData = new FormData();
+  formData.append('image', file);
+
+  try {
+    const response = await fetch('/upload', {
+      method: 'POST',
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      alert(data.error || 'Failed to upload image');
+      return;
+    }
+
+    // Send the image message through Socket.io
+    socket.emit('chat message', { text: '', imageUrl: data.imageUrl, username });
+
+  } catch (err) {
+    console.error('Image upload failed:', err);
+    alert('Could not upload image. Please try again.');
+  } finally {
+    imageInput.value = ''; // reset so the same file can be selected again later
+  }
 });
 
 // Show typing indicator when someone else is typing
@@ -141,7 +175,18 @@ function displayMessage(data) {
 
   const bubble = document.createElement('div');
   bubble.classList.add('bubble');
-  bubble.textContent = data.text;
+
+  if (data.imageUrl) {
+    // Display an image message
+    bubble.classList.add('image-bubble');
+    const img = document.createElement('img');
+    img.src = data.imageUrl;
+    img.classList.add('chat-image');
+    bubble.appendChild(img);
+  } else {
+    // Display a text message
+    bubble.textContent = data.text;
+  }
 
   const time = document.createElement('div');
   time.classList.add('timestamp');
