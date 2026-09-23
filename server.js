@@ -162,17 +162,25 @@ app.post('/upload', upload.single('image'), (req, res) => {
 });
 
 // Handle real-time connections with Socket.io
+let onlineUsers = {}; // socket.id -> username
+
 io.on('connection', (socket) => {
   console.log('A user connected:', socket.id);
 
-  // When a user sends a message, broadcast it (with sender info + time) to everyone
+  // When a user identifies themselves (after login), track them as online
+  socket.on('user online', (username) => {
+    onlineUsers[socket.id] = username;
+    io.emit('online count', Object.keys(onlineUsers).length);
+    io.emit('online users', Object.values(onlineUsers));
+  });
+
+  // When a user sends a message, save it and broadcast it to everyone
   socket.on('chat message', async (data) => {
     const time = new Date().toLocaleTimeString('en-US', {
       hour: '2-digit',
       minute: '2-digit',
     });
 
-    // Save the message to the database (text and/or image URL)
     try {
       await pool.query(
         'INSERT INTO messages (username, text, image_url) VALUES ($1, $2, $3)',
@@ -182,7 +190,6 @@ io.on('connection', (socket) => {
       console.error('Error saving message:', err);
     }
 
-    // Broadcast the message to everyone
     io.emit('chat message', {
       text: data.text,
       imageUrl: data.imageUrl,
@@ -192,12 +199,24 @@ io.on('connection', (socket) => {
     });
   });
 
+  // When a user is typing, tell everyone else
+  socket.on('typing', (username) => {
+    socket.broadcast.emit('typing', username);
+  });
+
+  // When a user stops typing
+  socket.on('stop typing', () => {
+    socket.broadcast.emit('stop typing');
+  });
+
   // When a user disconnects
   socket.on('disconnect', () => {
     console.log('A user disconnected:', socket.id);
+    delete onlineUsers[socket.id];
+    io.emit('online count', Object.keys(onlineUsers).length);
+    io.emit('online users', Object.values(onlineUsers));
   });
 });
-
 // Test database connection
 pool.query('SELECT NOW()', (err, res) => {
   if (err) {

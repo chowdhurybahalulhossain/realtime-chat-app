@@ -11,6 +11,8 @@ const typingIndicator = document.getElementById('typing-indicator');
 const attachBtn = document.getElementById('attach-btn');
 const logoutBtn = document.getElementById('logout-btn');
 const imageInput = document.getElementById('image-input');
+const emojiBtn = document.getElementById('emoji-btn');
+const emojiPanel = document.getElementById('emoji-panel');
 
 let username = '';
 let typingTimeout;
@@ -37,6 +39,7 @@ async function checkLogin() {
 
     const data = await response.json();
     username = data.user.name;
+    socket.emit('user online', username);
 
     chatContainer.style.display = 'flex';
     input.focus();
@@ -90,12 +93,33 @@ if (logoutBtn) {
 form.addEventListener('submit', (e) => {
   e.preventDefault();
 
-  if (input.value) {
+  if (input.value.trim()) {
     socket.emit('chat message', { text: input.value, username });
     socket.emit('stop typing');
     input.value = '';
+  } else {
+    // Input is empty — send a thumbs up
+    socket.emit('chat message', { text: '👍', username });
   }
+
+  updateSendButton();
 });
+
+// Show a like button when the input is empty, send button when it has text
+const sendBtn = form.querySelector('button[type="submit"]');
+
+function updateSendButton() {
+  if (input.value.trim() === '') {
+    sendBtn.innerHTML = '<i class="fa-solid fa-thumbs-up"></i>';
+    sendBtn.classList.add('like-btn');
+  } else {
+    sendBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i>';
+    sendBtn.classList.remove('like-btn');
+  }
+}
+
+input.addEventListener('input', updateSendButton);
+updateSendButton(); // set initial state
 
 // Detect typing and notify the server
 input.addEventListener('input', () => {
@@ -110,6 +134,39 @@ input.addEventListener('input', () => {
 // Clicking the attach icon opens the hidden file picker
 attachBtn.addEventListener('click', () => {
   imageInput.click();
+});
+
+// Common emojis for the picker
+const emojiList = [
+  '😀', '😂', '😍', '🥰', '😎', '🤔', '😢', '😡',
+  '👍', '👎', '❤️', '🔥', '🎉', '🙏', '👏', '💯',
+  '😊', '😭', '🥳', '😴', '🤗', '😉', '🙌', '✨'
+];
+
+// Build the emoji panel
+emojiList.forEach((emoji) => {
+  const span = document.createElement('span');
+  span.textContent = emoji;
+  span.classList.add('emoji-item');
+  span.addEventListener('click', () => {
+    input.value += emoji;
+    input.focus();
+    emojiPanel.classList.remove('show');
+  });
+  emojiPanel.appendChild(span);
+});
+
+// Toggle the emoji panel when clicking the emoji icon
+emojiBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  emojiPanel.classList.toggle('show');
+});
+
+// Close the panel if clicking anywhere else
+document.addEventListener('click', (e) => {
+  if (!emojiPanel.contains(e.target) && e.target !== emojiBtn) {
+    emojiPanel.classList.remove('show');
+  }
 });
 
 // When the user selects an image, upload it
@@ -157,6 +214,27 @@ socket.on('stop typing', () => {
 // Update online user count
 socket.on('online count', (count) => {
   onlineCount.textContent = `${count} online`;
+});
+
+// Update the online users panel
+socket.on('online users', (users) => {
+  const list = document.getElementById('online-users-list');
+  if (!list) return;
+
+  // Remove duplicate names (same person logged in on multiple tabs)
+  const uniqueUsers = [...new Set(users)];
+
+  list.innerHTML = '';
+  users.forEach((name) => {
+    const li = document.createElement('li');
+    li.innerHTML = `
+      <div class="user-avatar" style="background-color: ${getAvatarColor(name)}">
+        ${name.charAt(0).toUpperCase()}
+      </div>
+      <span>${name}</span>
+    `;
+    list.appendChild(li);
+  });
 });
 
 // Reusable function to display a single message in the chat
@@ -215,4 +293,17 @@ function displayMessage(data) {
 // When a message is received live from the server, display it
 socket.on('chat message', (data) => {
   displayMessage(data);
+});
+
+// Toggle the online users info panel
+const infoBtn = document.getElementById('info-btn');
+const infoPanel = document.getElementById('info-panel');
+const closeInfoBtn = document.getElementById('close-info-btn');
+
+infoBtn.addEventListener('click', () => {
+  infoPanel.classList.add('show');
+});
+
+closeInfoBtn.addEventListener('click', () => {
+  infoPanel.classList.remove('show');
 });

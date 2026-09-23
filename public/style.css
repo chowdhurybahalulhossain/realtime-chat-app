@@ -38,7 +38,7 @@ body {
   background: rgba(255, 255, 255, 0.1);
   border-bottom: 1px solid rgba(255, 255, 255, 0.15);
   color: white;
-  padding: 16px clamp(12px, 3vw, 40px);
+  padding: 16px clamp(12px, 2vw, 24px);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -95,7 +95,7 @@ body {
 #messages {
   flex: 1;
   list-style: none;
-  padding: 24px clamp(12px, 3vw, 40px);
+  padding: 24px clamp(12px, 2vw, 24px);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -203,7 +203,7 @@ body {
   align-items: center;
   gap: 12px;
   border-top: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 16px clamp(12px, 3vw, 40px);
+  padding: 16px clamp(12px, 2vw, 24px);
   background: rgba(255, 255, 255, 0.05);
   width: 100%;
   flex-shrink: 0;
@@ -356,4 +356,103 @@ body {
   .input-icon {
     font-size: 17px;
   }
+}
+
+.emoji-wrapper {
+  position: relative;
+}
+
+.emoji-panel {
+  position: absolute;
+  bottom: 45px;
+  left: 0;
+  background: rgba(20, 25, 40, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 14px;
+  padding: 10px;
+  display: none;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+  width: 220px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  z-index: 10;
+}
+
+.emoji-panel.show {
+  display: grid;
+}
+
+.emoji-item {
+  font-size: 20px;
+  cursor: pointer;
+  text-align: center;
+  padding: 4px;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+
+.emoji-item:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+#form button.like-btn {
+  background: linear-gradient(135deg, #4a9eff, #2e7fe0);
+}
+
+.info-panel {
+  position: fixed;
+  top: 0;
+  right: -300px;
+  width: 280px;
+  height: 100vh;
+  background: rgba(15, 20, 35, 0.95);
+  backdrop-filter: blur(14px);
+  border-left: 1px solid rgba(255, 255, 255, 0.15);
+  transition: right 0.3s ease;
+  z-index: 20;
+  padding: 20px;
+}
+
+.info-panel.show {
+  right: 0;
+}
+
+.info-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  color: white;
+}
+
+.info-panel-header h3 {
+  font-size: 16px;
+}
+
+#online-users-list {
+  list-style: none;
+}
+
+#online-users-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  color: white;
+  font-size: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.user-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-weight: bold;
+  font-size: 13px;
+  flex-shrink: 0;
 }

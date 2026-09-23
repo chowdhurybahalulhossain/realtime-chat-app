@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
 
   <div class="chat-container" id="chat-container" style="display: none;">
@@ -23,7 +25,7 @@
       <div class="header-icons">
         <span class="icon-btn" title="Voice call (coming soon)"><i class="fa-solid fa-phone"></i></span>
         <span class="icon-btn" title="Video call (coming soon)"><i class="fa-solid fa-video"></i></span>
-        <span class="icon-btn" title="Chat info (coming soon)"><i class="fa-solid fa-circle-info"></i></span>
+        <span class="icon-btn" id="info-btn" title="Online users"><i class="fa-solid fa-circle-info"></i></span>
         <span class="icon-btn" id="logout-btn" title="Log out"><i class="fa-solid fa-right-from-bracket"></i></span>
       </div>
     </div>
@@ -32,15 +34,28 @@
     <div id="typing-indicator"></div>
 
     <form id="form">
-      <span class="icon-btn input-icon" title="Emoji (coming soon)"><i class="fa-regular fa-face-smile"></i></span>
-      <span class="icon-btn input-icon" id="attach-btn" title="Send image (coming soon)"><i class="fa-solid fa-paperclip"></i></span>
+      <div class="emoji-wrapper">
+        <span class="icon-btn input-icon" id="emoji-btn" title="Emoji"><i class="fa-regular fa-face-smile"></i></span>
+        <div class="emoji-panel" id="emoji-panel"></div>
+      </div>
+      <span class="icon-btn input-icon" id="attach-btn" title="Send image (coming soon)"><i
+          class="fa-solid fa-paperclip"></i></span>
       <input type="file" id="image-input" accept="image/*" style="display: none;" />
       <input id="input" autocomplete="off" placeholder="Type a message..." />
       <button type="submit"><i class="fa-solid fa-paper-plane"></i></button>
     </form>
+    <!-- Online users side panel -->
+    <div class="info-panel" id="info-panel">
+      <div class="info-panel-header">
+        <h3>Online Users</h3>
+        <span class="icon-btn" id="close-info-btn"><i class="fa-solid fa-xmark"></i></span>
+      </div>
+      <ul id="online-users-list"></ul>
+    </div>
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="client.js"></script>
 </body>
+
 </html>
