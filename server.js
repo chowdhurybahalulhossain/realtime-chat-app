@@ -170,7 +170,7 @@ io.on('connection', (socket) => {
   // When a user identifies themselves (after login), track them as online
   socket.on('user online', (username) => {
     onlineUsers[socket.id] = username;
-    io.emit('online count', Object.keys(onlineUsers).length);
+    io.emit('online count', new Set(Object.values(onlineUsers)).size);
     io.emit('online users', Object.values(onlineUsers));
   });
 
@@ -213,7 +213,7 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log('A user disconnected:', socket.id);
     delete onlineUsers[socket.id];
-    io.emit('online count', Object.keys(onlineUsers).length);
+    io.emit('online count', new Set(Object.values(onlineUsers)).size);
     io.emit('online users', Object.values(onlineUsers));
   });
 });

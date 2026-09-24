@@ -221,11 +221,10 @@ socket.on('online users', (users) => {
   const list = document.getElementById('online-users-list');
   if (!list) return;
 
-  // Remove duplicate names (same person logged in on multiple tabs)
   const uniqueUsers = [...new Set(users)];
 
   list.innerHTML = '';
-  users.forEach((name) => {
+  uniqueUsers.forEach((name) => {
     const li = document.createElement('li');
     li.innerHTML = `
       <div class="user-avatar" style="background-color: ${getAvatarColor(name)}">
