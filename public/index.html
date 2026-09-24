@@ -23,8 +23,8 @@
         </div>
       </div>
       <div class="header-icons">
-        <span class="icon-btn" title="Voice call (coming soon)"><i class="fa-solid fa-phone"></i></span>
-        <span class="icon-btn" title="Video call (coming soon)"><i class="fa-solid fa-video"></i></span>
+        <span class="icon-btn coming-soon-btn" title="Voice call (coming soon)"><i class="fa-solid fa-phone"></i></span>
+        <span class="icon-btn coming-soon-btn" title="Video call (coming soon)"><i class="fa-solid fa-video"></i></span>
         <span class="icon-btn" id="info-btn" title="Online users"><i class="fa-solid fa-circle-info"></i></span>
         <span class="icon-btn" id="logout-btn" title="Log out"><i class="fa-solid fa-right-from-bracket"></i></span>
       </div>
@@ -44,13 +44,31 @@
       <input id="input" autocomplete="off" placeholder="Type a message..." />
       <button type="submit"><i class="fa-solid fa-paper-plane"></i></button>
     </form>
-    <!-- Online users side panel -->
+    <!-- Info side panel: Users + Theme tabs -->
     <div class="info-panel" id="info-panel">
       <div class="info-panel-header">
-        <h3>Online Users</h3>
+        <h3 id="panel-title">Online Users</h3>
         <span class="icon-btn" id="close-info-btn"><i class="fa-solid fa-xmark"></i></span>
       </div>
-      <ul id="online-users-list"></ul>
+
+      <div class="panel-tabs">
+        <button class="panel-tab active" data-tab="users">Users</button>
+        <button class="panel-tab" data-tab="theme">Theme</button>
+      </div>
+
+      <div class="panel-view" id="users-view">
+        <ul id="online-users-list"></ul>
+      </div>
+
+      <div class="panel-view" id="theme-view" style="display: none;">
+        <p class="theme-section-label">Mode</p>
+        <div class="mode-toggle">
+          <button class="mode-btn" data-mode="dark"><i class="fa-solid fa-moon"></i> Dark</button>
+          <button class="mode-btn" data-mode="light"><i class="fa-solid fa-sun"></i> Light</button>
+        </div>
+        <p class="theme-section-label">Background</p>
+        <div class="bg-grid" id="bg-grid"></div>
+      </div>
     </div>
   </div>
 

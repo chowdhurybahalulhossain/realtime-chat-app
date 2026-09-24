@@ -136,6 +136,42 @@ attachBtn.addEventListener('click', () => {
   imageInput.click();
 });
 
+// Show a small "coming soon" tooltip near the clicked button
+function showTooltip(targetEl, message) {
+  const existing = document.querySelector('.feature-tooltip');
+  if (existing) existing.remove();
+
+  const tooltip = document.createElement('div');
+  tooltip.classList.add('feature-tooltip');
+  tooltip.textContent = message;
+  document.body.appendChild(tooltip);
+
+  const rect = targetEl.getBoundingClientRect();
+  const tooltipRect = tooltip.getBoundingClientRect();
+
+  // Position it centered above the button
+  let left = rect.left + rect.width / 2 - tooltipRect.width / 2;
+  let top = rect.bottom + 10;
+
+  // Keep it within the screen edges
+  left = Math.max(10, Math.min(left, window.innerWidth - tooltipRect.width - 10));
+
+  tooltip.style.left = `${left}px`;
+  tooltip.style.top = `${top}px`;
+
+  setTimeout(() => tooltip.classList.add('show'), 10);
+  setTimeout(() => {
+    tooltip.classList.remove('show');
+    setTimeout(() => tooltip.remove(), 200);
+  }, 2000);
+}
+
+document.querySelectorAll('.coming-soon-btn').forEach((btn) => {
+  btn.addEventListener('click', (e) => {
+    showTooltip(e.currentTarget, 'Coming soon');
+  });
+});
+
 // Common emojis for the picker
 const emojiList = [
   '😀', '😂', '😍', '🥰', '😎', '🤔', '😢', '😡',
@@ -305,4 +341,84 @@ infoBtn.addEventListener('click', () => {
 
 closeInfoBtn.addEventListener('click', () => {
   infoPanel.classList.remove('show');
+});
+
+// ===== Theme & Background Switcher =====
+
+const backgroundOptions = [
+  { name: 'Mountains', url: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=800' },
+  { name: 'Ocean', url: 'https://images.unsplash.com/photo-1505142468610-359e7d316be0?q=80&w=800' },
+  { name: 'Forest', url: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=800' },
+  { name: 'City', url: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=800' },
+  { name: 'Abstract', url: 'https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=800' },
+  { name: 'Space', url: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=800' },
+];
+
+const bgGrid = document.getElementById('bg-grid');
+const modeButtons = document.querySelectorAll('.mode-btn');
+
+// Build the background thumbnail grid
+backgroundOptions.forEach((bg, index) => {
+  const thumb = document.createElement('div');
+  thumb.classList.add('bg-thumb');
+  thumb.style.backgroundImage = `url('${bg.url}')`;
+  thumb.title = bg.name;
+  thumb.addEventListener('click', () => setBackground(index));
+  bgGrid.appendChild(thumb);
+});
+
+// Apply a chosen background
+function setBackground(index) {
+  const bg = backgroundOptions[index];
+  document.body.style.backgroundImage =
+    `linear-gradient(180deg, rgba(10, 20, 40, 0.35), rgba(10, 20, 40, 0.65)), url('${bg.url.replace('w=800', 'w=1600')}')`;
+  localStorage.setItem('linkup-bg', index);
+
+  document.querySelectorAll('.bg-thumb').forEach((el, i) => {
+    el.classList.toggle('selected', i === index);
+  });
+}
+
+// Apply light or dark mode
+function setMode(mode) {
+  document.body.classList.toggle('light-mode', mode === 'light');
+  localStorage.setItem('linkup-mode', mode);
+
+  modeButtons.forEach((btn) => {
+    btn.classList.toggle('active', btn.dataset.mode === mode);
+  });
+}
+
+// Restore saved preferences on page load
+const savedBg = localStorage.getItem('linkup-bg');
+const savedMode = localStorage.getItem('linkup-mode');
+setBackground(savedBg !== null ? parseInt(savedBg) : 0);
+setMode(savedMode || 'dark');
+
+// Mode button clicks
+modeButtons.forEach((btn) => {
+  btn.addEventListener('click', () => setMode(btn.dataset.mode));
+});
+
+// Switch between Users and Theme tabs inside the info panel
+const panelTabs = document.querySelectorAll('.panel-tab');
+const usersView = document.getElementById('users-view');
+const themeView = document.getElementById('theme-view');
+const panelTitle = document.getElementById('panel-title');
+
+panelTabs.forEach((tab) => {
+  tab.addEventListener('click', () => {
+    panelTabs.forEach((t) => t.classList.remove('active'));
+    tab.classList.add('active');
+
+    if (tab.dataset.tab === 'users') {
+      usersView.style.display = 'block';
+      themeView.style.display = 'none';
+      panelTitle.textContent = 'Online Users';
+    } else {
+      usersView.style.display = 'none';
+      themeView.style.display = 'block';
+      panelTitle.textContent = 'Theme';
+    }
+  });
 });
